@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-require('../models/Posts.js');
-require('../models/Comments.js');
-var Post = mongoose.model('Post');
-var Comment = mongoose.model('Comment');
+
+var Post = require('../models/Posts.js');
+var Comment = require('../models/Comments.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -25,6 +24,18 @@ router.post('/posts', function(req, res, next){
  		if(err) {return next(err); }
  		res.json(post);
  	});
+});
+
+router.param('post', function(req, res, next, id){
+	var query = Post.findById(id);
+
+	query.exec(function(err, post){
+		if (err) {return next(err);}
+		if (!post) {return next(new Error('can\'t find post')); }
+
+		req.post = post;
+		return next();
+	});
 });
 
 
