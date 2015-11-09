@@ -29,7 +29,7 @@ router.post('/register', function(req, res, next){
 });
 
 router.post('/login', function(req, res, next){
-	if(!req.body.username || req.body.password) {
+	if(!req.body.username || !req.body.password) {
 		return res.status(400).json({message: 'Please fill out all fields'});
 	}
 
@@ -50,8 +50,9 @@ router.get('/posts', function(req, res, next){
 	});
 });
 
-router.post('/posts', function(req, res, next){
+router.post('/posts', auth, function(req, res, next){
  	var post = new Post(req.body);
+ 	post.author = req.payload.username;
 
  	post.save(function(err, post){
  		if(err) {return next(err); }
@@ -82,7 +83,7 @@ router.get('/posts/:post', function(req, res, next) {
 	});
 });
 
-router.put('/posts/:post/upvote', function(req, res, next) {
+router.put('/posts/:post/upvote', auth, function(req, res, next) {
 	req.post.upvote(function(err, post){
 		if (err) {return next(err); }
 
@@ -90,9 +91,10 @@ router.put('/posts/:post/upvote', function(req, res, next) {
 	});
 });
 
-router.post('/posts/:post/comments', function(req, res, next){
+router.post('/posts/:post/comments', auth, function(req, res, next){
 	var comment = new Comment(req.body);
 	comment.post = req.post;
+	comment.author = req.payload.username;
 
 	comment.save(function(err, comment){
 		if(err) {return next(err); }
@@ -118,7 +120,7 @@ router.param('comment', function(req, res, next, id){
 	});
 });
 
-router.put('/posts/:post/comments/:comment/upvote', function(req, res, next) {
+router.put('/posts/:post/comments/:comment/upvote', auth, function(req, res, next) {
 	req.comment.upvote(function(err, comment){
 		if (err) {return next(err); }
 
