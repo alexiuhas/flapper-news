@@ -67,9 +67,6 @@ router.param('post', function(req, res, next, id){
 		if (err) {return next(err);}
 		if (!post) {return next(new Error('can\'t find post')); }
 
-/*		post.populate('comments', function(err, post){
-			if (err) {return next(err);}
-		});*/
 		req.post = post;
 		return next();
 	});
@@ -127,19 +124,5 @@ router.put('/posts/:post/comments/:comment/upvote', auth, function(req, res, nex
 		res.json(comment);
 	});
 });
-
-/*
-router.get('/posts/:post/comments', function(req, res, next){
-	Comment.find(function(err, comments){
-		if(err){return next(err); }
-		res.json(comments);
-	});
-});
-
-router.get('/posts/:post/comments/:comment', function(req, res) {
-	res.json(req.comment);
-});
-*/
-
 
 module.exports = router;
